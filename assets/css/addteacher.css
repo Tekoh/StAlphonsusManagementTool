@@ -1,0 +1,32 @@
+.addTeacher {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    margin-top: 1rem;
+}
+
+form input {
+    margin: 0.5rem;
+    padding: 0.5rem;
+}
+
+form button {
+    margin: 0.5rem;
+    padding: 0.5rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+form button:hover {
+    background-color: #004c9d;
+    border: 1px solid #007bff;
+}
