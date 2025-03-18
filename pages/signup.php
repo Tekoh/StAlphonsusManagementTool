@@ -1,4 +1,36 @@
+<?php
+session_start();
+include __DIR__ . "/../connection.php";
+include __DIR__ . "/../functions.php";
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $fname = $_POST['fname'];
+    $sname = $_POST['sname'];
+    $username = $_POST['username'];
+    $person_id = $_POST['person_id'];
+    $password = $_POST['password'];
+    $reppassword = $_POST['reppassword'];
 
+    if (!empty($fname) && !empty($sname) && !empty($username) && !empty($person_id) && !empty($password) && !empty($reppassword)) {
+        if ($password === $reppassword) {
+            $person_check_query = "SELECT * FROM persons WHERE person_id = '$person_id' LIMIT 1";
+            $result = mysqli_query($conn, $person_check_query);
+            if (mysqli_num_rows($result) > 0) {
+                $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+                $query = "INSERT INTO users (username, person_id, password) VALUES ('$username', '$person_id', '$hashed_password')";
+                mysqli_query($conn, $query);
+                header('Location: /pages/signin.php');
+                die();
+            } else {
+                echo "Person ID does not exist.";
+            }
+        } else {
+            echo "Passwords do not match.";
+        }
+    } else {
+        echo "Please fill all the fields.";
+    }
+}
+?>
 <html lang="en">
 
 <head>
@@ -16,12 +48,12 @@
         <p class="message">Welcome to St Alphonsus Primary School Management! Please Sign Up</p>
         <div class="flex">
             <label>
-                <input class="input" type="text" placeholder="" required="">
+                <input class="input" type="text" placeholder="" required="" name="fname">
                 <span>Firstname</span>
             </label>
 
             <label>
-                <input class="input" type="text" placeholder="" required="">
+                <input class="input" type="text" placeholder="" required="" name="sname">
                 <span>Lastname</span>
             </label>
         </div>

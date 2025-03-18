@@ -3,9 +3,8 @@ session_start();
 include __DIR__ . "/connection.php";
 include __DIR__ . "/functions.php";
 $_SESSION;
-$user_data = check_login($con);
+$user_data = signin_check($conn);
 ?>
-
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -32,6 +31,7 @@ $user_data = check_login($con);
             </div>
         </div>
     </nav>
+    <a href="/pages/signout.php">Log Out</a>
 
     <footer class="bg-dark text-white py-3 mt-4">
         <div class="container">

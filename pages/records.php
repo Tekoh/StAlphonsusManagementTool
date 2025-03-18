@@ -1,5 +1,11 @@
+<?php
+session_start();
+include __DIR__ . "/../connection.php";
+include __DIR__ . "/../functions.php";
+$_SESSION;
+$user_data = signin_check($conn);
+?>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">

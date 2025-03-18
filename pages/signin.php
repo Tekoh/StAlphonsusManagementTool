@@ -1,3 +1,33 @@
+<?php
+session_start();
+include __DIR__ . "/../connection.php";
+include __DIR__ . "/../functions.php";
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+    if (!empty($username) && !empty($password)) {
+        $query = "SELECT * FROM users WHERE username = '$username'";
+        $result = mysqli_query($conn, $query);
+        if (mysqli_num_rows($result) > 0) {
+            $user = mysqli_fetch_assoc($result);
+            if (password_verify($password, $user['password'])) {
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['username'] = $user['username'];
+                header('Location: /index.php');
+                die();
+            } else {
+                $error = "<p class='error'>Invalid Username or Password</p>";
+            }
+        } else {
+            $error = "<p class='error'>Invalid Username or Password</p>";
+        }
+    } else {
+        $error = "<p class='error'>Please fill all the fields</p>";
+    }
+}
+
+
+?>
 <html lang="en">
 
 <head>
@@ -23,8 +53,6 @@
             <span>Password</span>
         </label>
         <button class="submit">Submit</button>
-        <?php echo $success; ?>
-        <?php echo $error; ?>
         <p class="signin">Dont Have An Account ? <a href="/pages/signup.php">Sign Up</a> </p>
     </form>
 </body>
