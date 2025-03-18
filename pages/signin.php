@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -11,19 +10,21 @@
 </head>
 
 <body>
-    <form class="form">
+    <form class="form" method="POST">
         <p class="title">Login </p>
         <p class="message">Welcome to St Alphonsus Primary School Management! Please Sign In</p>
         <label>
-            <input class="input" type="email" placeholder="" required="">
-            <span>Email</span>
+            <input class="input" type="text" placeholder="" required="" name="username">
+            <span>Username</span>
         </label>
 
         <label>
-            <input class="input" type="password" placeholder="" required="">
+            <input class="input" type="password" placeholder="" required="" name="password">
             <span>Password</span>
         </label>
         <button class="submit">Submit</button>
+        <?php echo $success; ?>
+        <?php echo $error; ?>
         <p class="signin">Dont Have An Account ? <a href="/pages/signup.php">Sign Up</a> </p>
     </form>
 </body>

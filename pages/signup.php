@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+
 <html lang="en">
 
 <head>
@@ -11,7 +11,7 @@
 </head>
 
 <body>
-    <form class="form">
+    <form class="form" method="POST">
         <p class="title">Register </p>
         <p class="message">Welcome to St Alphonsus Primary School Management! Please Sign Up</p>
         <div class="flex">
@@ -27,21 +27,20 @@
         </div>
 
         <label>
-            <input class="input" type="email" placeholder="" required="">
-            <span>Email</span>
+            <input class="input" type="text" placeholder="" required="" name="username">
+            <span>Username</span>
         </label>
-
         <label>
-            <input class="input" type="password" placeholder="" required="">
+            <input class="input" type="text" placeholder="" required="" name="person_id">
+            <span>Person ID</span>
+        </label>
+        <label>
+            <input class="input" type="password" placeholder="" required="" name="password">
             <span>Password</span>
         </label>
         <label>
-            <input class="input" type="password" placeholder="" required="">
+            <input class="input" type="password" placeholder="" required="" name="reppassword">
             <span>Confirm password</span>
-        </label>
-        <label>
-            <input class="input" type="password" placeholder="" required="">
-            <span>Faculty Code</span>
         </label>
         <button class="submit">Submit</button>
         <p class="signin">Already have an acount ? <a href="/pages/signin.php">Sign In</a> </p>

@@ -1,10 +1,11 @@
 <?php
-
 $dbhost = "localhost";
 $dbuser = "root";
 $dbpass = "";
 $dbname = "stalphonsusdb";
 
-if (!$con = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname)) {
-    die("". mysqli_connect_error());
+$conn = new mysqli($dbhost, $dbuser, $dbpass, $dbname);
+
+if (!$conn) {
+    die("Connection To $dbname Failed!". mysqli_connect_error());
 }
