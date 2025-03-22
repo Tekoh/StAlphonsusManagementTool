@@ -1,21 +1,21 @@
 document.addEventListener("DOMContentLoaded", function () {
     const radios = document.querySelectorAll('input[name="tableOption"]');
-    const tables = document.querySelectorAll("table");
+    const hiddenElements = document.querySelectorAll(".notinuse");
 
-    // Function to hide all tables
-    function hideAllTables() {
-        tables.forEach(table => table.style.display = "none");
+    // Function to hide all elements with class 'notinuse'
+    function hideAllHiddenElements() {
+        hiddenElements.forEach(element => element.style.display = "none");
     }
     // Hide all tables initially
-    hideAllTables();
+    hideAllHiddenElements();
 
     // Add event listener to each radio button
     radios.forEach(radio => {
         radio.addEventListener("change", function () {
-            hideAllTables(); // Hide all tables first
-            const selectedTable = document.getElementById(this.value);
-            if (selectedTable) {
-                selectedTable.style.display = "table"; // Show selected table
+            hideAllHiddenElements(); // Hide all hidden elements first
+            const selectedElement = document.getElementById(this.value);
+            if (selectedElement) {
+                selectedElement.style.display = "block"; // Show selected element
             }
             localStorage.setItem('selectedTableOption', this.value); // Save selected option
         });

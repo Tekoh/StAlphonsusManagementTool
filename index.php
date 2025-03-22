@@ -12,7 +12,6 @@ $user_data = signin_check($conn);
     <title>St Alphonsus | Home</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
-
 <body>
     <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
         <div class="container-fluid">
@@ -26,13 +25,64 @@ $user_data = signin_check($conn);
                     <a class="nav-link active" href="/index.php">Home</a>
                     <a class="nav-link" href="/pages/records.php">View Records</a>
                     <a class="nav-link" href="/pages/registration.php">Registration</a>
+                    <a class="nav-link" href="/pages/classinfo.php">Class Information</a>
                     <a class="nav-link" href="/pages/library.php">Library</a>
+                </div>
+                <div class="navbar-nav ms-auto">
+                    <a class="nav-link" href="/pages/signout.php">Logout</a>
                 </div>
             </div>
         </div>
     </nav>
-    <a href="/pages/signout.php">Log Out</a>
-
+    <div class="container mt-5">
+        <h1 class="text-center">Welcome to St Alphonsus</h1>
+        <p class="text-center">
+            Stay updated on records, registration, class info, and more. Manage everything in one place.
+        </p>
+        <div class="row mt-4">
+            <div class="col">
+                <div class="card h-100">
+                    <img src="https://cdn.prod.website-files.com/62045da4270c887c4de9c45f/62080090f9b2b85ec9298118_iStock-1303715147.jpg" class="card-img-top" alt="Records" style="width: 100%; height: 200px; object-fit: cover;">
+                    <div class="card-header">Records</div>
+                    <div class="card-body">
+                        <p class="card-text">View and manage student records effortlessly.</p>
+                        <a href="/pages/records.php" class="btn btn-primary">Go</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100">
+                    <img src="https://www.nationalwillregister.co.uk/app/uploads/2021/07/Register-a-Will-Landscape-960x540-c-default.jpg" class="card-img-top" alt="Registration" style="width: 100%; height: 200px; object-fit: cover;">
+                    <div class="card-header">Registration</div>
+                    <div class="card-body">
+                        <p class="card-text">Enroll students and edit registration details.</p>
+                        <a href="/pages/registration.php" class="btn btn-primary">Go</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100">
+                    <img src="https://www.thechecker.net/hubfs/images/information_at_fingertips.jpg" class="card-img-top" alt="Class Info" style="width: 100%; height: 200px; object-fit: cover;">
+                    <div class="card-header">Class Info</div>
+                    <div class="card-body">
+                        <p class="card-text">Access information on schedules and teachers.</p>
+                        <a href="/pages/classinfo.php" class="btn btn-primary">Go</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/SanDiegoCityCollegeLearningResource_-_bookshelf.jpg/1200px-SanDiegoCityCollegeLearningResource_-_bookshelf.jpg" class="card-img-top" alt="Library" style="width: 100%; height: 200px; object-fit: cover;">
+                    <div class="card-header">Library</div>
+                    <div class="card-body">
+                        <p class="card-text">Access library information.</p>
+                        <a href="/pages/library.php" class="btn btn-primary">Go</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
     <footer class="bg-dark text-white py-3 mt-4">
         <div class="container">
             <div class="row justify-content-between">
@@ -41,8 +91,9 @@ $user_data = signin_check($conn);
                     <ul class="list-unstyled">
                         <li><a href="/index.php" class="text-white">Home</a></li>
                         <li><a href="/pages/records.php" class="text-white">Records</a></li>
-                        <li><a href="#" class="text-white">Registration</a></li>
-                        <li><a href="#" class="text-white">Library</a></li>
+                        <li><a href="/pages/registration.php" class="text-white">Registration</a></li>
+                        <li><a href="/pages/classinfo.php" class="text-white">Class Information</a></li>
+                        <li><a href="/pages/library.php" class="text-white">Library</a></li>
                     </ul>
                 </div>
                 <div class="col text-end align-self-center">
