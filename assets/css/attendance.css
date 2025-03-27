@@ -35,13 +35,3 @@
     background-color: var(--bs-gray-900);
     font-weight: 600;
 }
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 1rem;
-}
-
-.guardian-relation form {
-    width: 90%;
-}

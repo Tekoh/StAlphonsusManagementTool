@@ -64,6 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <a class="nav-link" href="/pages/registration.php">Registration</a>
                     <a class="nav-link" href="/pages/classinfo.php">Class Information</a>
                     <a class="nav-link" href="/pages/library.php">Library</a>
+                    <a class="nav-link " href="/pages/attendance.php">Attendance</a>
                 </div>
                 <div class="navbar-nav ms-auto">
                     <a class="nav-link" href="/pages/signout.php">Logout</a>
@@ -93,33 +94,34 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <span class="name">Dinner Money Transactions</span>
         </label>
     </div>
-    <form method="GET" action="" class="d-flex justify-content-center my-3">
-        <input type="text" name="search" class="form-control me-2" placeholder="Search by name"
-            value="<?php echo isset($_GET['search']) ? $_GET['search'] : ''; ?>">
-        <button type="submit" class="btn btn-primary me-2">Search</button>
-        <button type="button" class="btn btn-secondary" onclick="window.location.href='records.php'">Reset</button>
-    </form>
-    <div class="teacher d-flex justify-content-center">
-        <table class="table table-bordered table-striped" id="teacher">
-            <thead>
-                <tr>
-                    <th>Teacher ID</th>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Date Of Birth</th>
-                    <th>Gender</th>
-                    <th>Email</th>
-                    <th>Address</th>
-                    <th>Medical History</th>
-                    <th>Contact</th>
-                    <th>Qualifications</th>
-                    <th>Enroll Date</th>
-                    <th>Salary</th>
-                    <th>Hours</th>
-                </tr>
-                <?php
-                $search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
-                $query = "SELECT t.teacher_id, p.first_name, p.last_name, p.date_of_birth, p.gender, p.email, p.address, p.medical_history, p.contact, p.qualifications, t.enroll_date, t.salary, t.hours 
+    <div class="container mt-4">
+        <form method="GET" action="" class="d-flex justify-content-center my-3">
+            <input type="text" name="search" class="form-control me-2" placeholder="Search by name"
+                value="<?php echo isset($_GET['search']) ? $_GET['search'] : ''; ?>">
+            <button type="submit" class="btn btn-primary me-2">Search</button>
+            <button type="button" class="btn btn-secondary" onclick="window.location.href='records.php'">Reset</button>
+        </form>
+        <div class="teacher d-flex justify-content-center">
+            <table class="table table-bordered table-striped" id="teacher">
+                <thead>
+                    <tr>
+                        <th>Teacher ID</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Date Of Birth</th>
+                        <th>Gender</th>
+                        <th>Email</th>
+                        <th>Address</th>
+                        <th>Medical History</th>
+                        <th>Contact</th>
+                        <th>Qualifications</th>
+                        <th>Enroll Date</th>
+                        <th>Salary</th>
+                        <th>Hours</th>
+                    </tr>
+                    <?php
+                    $search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
+                    $query = "SELECT t.teacher_id, p.first_name, p.last_name, p.date_of_birth, p.gender, p.email, p.address, p.medical_history, p.contact, p.qualifications, t.enroll_date, t.salary, t.hours 
                           FROM teacher t 
                           JOIN persons p ON t.person_id = p.person_id
                           WHERE p.first_name LIKE '%$search%' 
@@ -134,11 +136,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                           OR t.enroll_date LIKE '%$search%' 
                           OR t.salary LIKE '%$search%' 
                           OR t.hours LIKE '%$search%'";
-                $result = $conn->query($query);
+                    $result = $conn->query($query);
 
-                if ($result && $result->num_rows > 0) {
-                    while ($row = $result->fetch_assoc()) {
-                        echo "<tr>
+                    if ($result && $result->num_rows > 0) {
+                        while ($row = $result->fetch_assoc()) {
+                            echo "<tr>
                                 <td>{$row['teacher_id']}</td>
                                 <td>{$row['first_name']}</td>
                                 <td>{$row['last_name']}</td>
@@ -153,36 +155,36 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 <td>{$row['salary']}</td>
                                 <td>{$row['hours']}</td>
                               </tr>";
+                        }
+                    } else {
+                        echo "<tr><td colspan='13'>No records found</td></tr>";
                     }
-                } else {
-                    echo "<tr><td colspan='13'>No records found</td></tr>";
-                }
-                ?>
-        </table>
-    </div>
-    <div class="student d-flex justify-content-center">
-        <table class="table table-bordered table-striped" id="student">
-            <thead>
-                <tr>
-                    <th>Student ID</th>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Date Of Birth</th>
-                    <th>Gender</th>
-                    <th>Email</th>
-                    <th>Address</th>
-                    <th>Medical History</th>
-                    <th>Contact</th>
-                    <th>Qualifications</th>
-                    <th>Subject</th>
-                    <th>Fee</th>
-                    <th>Fee Status</th>
-                    <th>Student Status</th>
-                    <th>Enroll Date</th>
-                </tr>
-                <?php
-                $search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
-                $query = "SELECT s.student_id, p.first_name, p.last_name, p.date_of_birth, p.gender, p.email, p.address, p.medical_history, p.contact, p.qualifications, s.subject, s.fee, s.fee_status, s.student_status, s.enroll_date 
+                    ?>
+            </table>
+        </div>
+        <div class="student d-flex justify-content-center">
+            <table class="table table-bordered table-striped" id="student">
+                <thead>
+                    <tr>
+                        <th>Student ID</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Date Of Birth</th>
+                        <th>Gender</th>
+                        <th>Email</th>
+                        <th>Address</th>
+                        <th>Medical History</th>
+                        <th>Contact</th>
+                        <th>Qualifications</th>
+                        <th>Subject</th>
+                        <th>Fee</th>
+                        <th>Fee Status</th>
+                        <th>Student Status</th>
+                        <th>Enroll Date</th>
+                    </tr>
+                    <?php
+                    $search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
+                    $query = "SELECT s.student_id, p.first_name, p.last_name, p.date_of_birth, p.gender, p.email, p.address, p.medical_history, p.contact, p.qualifications, s.subject, s.fee, s.fee_status, s.student_status, s.enroll_date 
                           FROM student s 
                           JOIN persons p ON s.person_id = p.person_id
                           WHERE p.first_name LIKE '%$search%' 
@@ -199,11 +201,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                           OR s.fee_status LIKE '%$search%' 
                           OR s.student_status LIKE '%$search%' 
                           OR s.enroll_date LIKE '%$search%'";
-                $result = $conn->query($query);
+                    $result = $conn->query($query);
 
-                if ($result && $result->num_rows > 0) {
-                    while ($row = $result->fetch_assoc()) {
-                        echo "<tr>
+                    if ($result && $result->num_rows > 0) {
+                        while ($row = $result->fetch_assoc()) {
+                            echo "<tr>
                                 <td>{$row['student_id']}</td>
                                 <td>{$row['first_name']}</td>
                                 <td>{$row['last_name']}</td>
@@ -238,34 +240,34 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 </td>
                                 <td>{$row['enroll_date']}</td>
                               </tr>";
+                        }
+                    } else {
+                        echo "<tr><td colspan='15'>No records found</td></tr>";
                     }
-                } else {
-                    echo "<tr><td colspan='15'>No records found</td></tr>";
-                }
-                ?>
-        </table>
-    </div>
-    <div class="assistant d-flex justify-content-center">
-        <table class="table table-bordered table-striped" id="ta">
-            <thead>
-                <tr>
-                    <th>Assistant ID</th>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Date Of Birth</th>
-                    <th>Gender</th>
-                    <th>Email</th>
-                    <th>Address</th>
-                    <th>Medical History</th>
-                    <th>Contact</th>
-                    <th>Qualifications</th>
-                    <th>Enroll Date</th>
-                    <th>Salary</th>
-                    <th>Hours</th>
-                </tr>
-                <?php
-                $search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
-                $query = "SELECT ta.assistant_id, p.first_name, p.last_name, p.date_of_birth, p.gender, p.email, p.address, p.medical_history, p.contact, p.qualifications, ta.enroll_date, ta.salary, ta.hours 
+                    ?>
+            </table>
+        </div>
+        <div class="assistant d-flex justify-content-center">
+            <table class="table table-bordered table-striped" id="ta">
+                <thead>
+                    <tr>
+                        <th>Assistant ID</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Date Of Birth</th>
+                        <th>Gender</th>
+                        <th>Email</th>
+                        <th>Address</th>
+                        <th>Medical History</th>
+                        <th>Contact</th>
+                        <th>Qualifications</th>
+                        <th>Enroll Date</th>
+                        <th>Salary</th>
+                        <th>Hours</th>
+                    </tr>
+                    <?php
+                    $search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
+                    $query = "SELECT ta.assistant_id, p.first_name, p.last_name, p.date_of_birth, p.gender, p.email, p.address, p.medical_history, p.contact, p.qualifications, ta.enroll_date, ta.salary, ta.hours 
                           FROM assistant ta 
                           JOIN persons p ON ta.person_id = p.person_id
                           WHERE p.first_name LIKE '%$search%' 
@@ -280,11 +282,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                           OR ta.enroll_date LIKE '%$search%' 
                           OR ta.salary LIKE '%$search%' 
                           OR ta.hours LIKE '%$search%'";
-                $result = $conn->query($query);
+                    $result = $conn->query($query);
 
-                if ($result && $result->num_rows > 0) {
-                    while ($row = $result->fetch_assoc()) {
-                        echo "<tr>
+                    if ($result && $result->num_rows > 0) {
+                        while ($row = $result->fetch_assoc()) {
+                            echo "<tr>
                                 <td>{$row['assistant_id']}</td>
                                 <td>{$row['first_name']}</td>
                                 <td>{$row['last_name']}</td>
@@ -299,33 +301,33 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 <td>{$row['salary']}</td>
                                 <td>{$row['hours']}</td>
                               </tr>";
+                        }
+                    } else {
+                        echo "<tr><td colspan='13'>No records found</td></tr>";
                     }
-                } else {
-                    echo "<tr><td colspan='13'>No records found</td></tr>";
-                }
-                ?>
-        </table>
-    </div>
-    <div class="guardian d-flex justify-content-center">
-        <table class="table table-bordered table-striped" id="guardian">
-            <thead>
-                <tr>
-                    <th>Guardian ID</th>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Date Of Birth</th>
-                    <th>Gender</th>
-                    <th>Email</th>
-                    <th>Address</th>
-                    <th>Medical History</th>
-                    <th>Contact</th>
-                    <th>Qualifications</th>
-                    <th>Wards</th>
-                    <th>Relation</th>
-                </tr>
-                <?php
-                $search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
-                $query = "SELECT g.guardian_id, p.first_name, p.last_name, p.date_of_birth, p.gender, p.email, p.address, p.medical_history, p.contact, p.qualifications, g.relation, 
+                    ?>
+            </table>
+        </div>
+        <div class="guardian d-flex justify-content-center">
+            <table class="table table-bordered table-striped" id="guardian">
+                <thead>
+                    <tr>
+                        <th>Guardian ID</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Date Of Birth</th>
+                        <th>Gender</th>
+                        <th>Email</th>
+                        <th>Address</th>
+                        <th>Medical History</th>
+                        <th>Contact</th>
+                        <th>Qualifications</th>
+                        <th>Wards</th>
+                        <th>Relation</th>
+                    </tr>
+                    <?php
+                    $search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
+                    $query = "SELECT g.guardian_id, p.first_name, p.last_name, p.date_of_birth, p.gender, p.email, p.address, p.medical_history, p.contact, p.qualifications, g.relation, 
                           GROUP_CONCAT(CONCAT(sp.first_name, ' ', sp.last_name) SEPARATOR ', ') AS wards
                           FROM guardian g 
                           JOIN persons p ON g.guardian_id = p.person_id
@@ -344,11 +346,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                           OR sp.first_name LIKE '%$search%' 
                           OR sp.last_name LIKE '%$search%'
                           GROUP BY g.guardian_id, p.first_name, p.last_name, p.date_of_birth, p.gender, p.email, p.address, p.medical_history, p.contact, p.qualifications, g.relation";
-                $result = $conn->query($query);
+                    $result = $conn->query($query);
 
-                if ($result && $result->num_rows > 0) {
-                    while ($row = $result->fetch_assoc()) {
-                        echo "<tr>
+                    if ($result && $result->num_rows > 0) {
+                        while ($row = $result->fetch_assoc()) {
+                            echo "<tr>
                                 <td>{$row['guardian_id']}</td>
                                 <td>{$row['first_name']}</td>
                                 <td>{$row['last_name']}</td>
@@ -362,29 +364,29 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 <td>{$row['wards']}</td>
                                 <td>{$row['relation']}</td>
                               </tr>";
+                        }
+                    } else {
+                        echo "<tr><td colspan='12'>No records found</td></tr>";
                     }
-                } else {
-                    echo "<tr><td colspan='12'>No records found</td></tr>";
-                }
-                ?>
-        </table>
-    </div>
-    <div class="dinner d-flex justify-content-center">
-        <table class="table table-bordered table-striped "id="dinner">
-            <thead>
-                <tr>
-                    <th>Payment ID</th>
-                    <th>Student ID</th>
-                    <th>Transaction Date</th>
-                    <th>Total Amount</th>
-                    <th>Amount Paid</th>
-                    <th>Amount Due</th>
-                    <th>Transaction Status</th>
-                </tr>
-                <tr>
-                    <?php
-                    $search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
-                    $query = "SELECT payment_id, student_id, transaction_date, total_amount, amount_paid, amount_due, transaction_status 
+                    ?>
+            </table>
+        </div>
+        <div class="dinner d-flex justify-content-center">
+            <table class="table table-bordered table-striped " id="dinner">
+                <thead>
+                    <tr>
+                        <th>Payment ID</th>
+                        <th>Student ID</th>
+                        <th>Transaction Date</th>
+                        <th>Total Amount</th>
+                        <th>Amount Paid</th>
+                        <th>Amount Due</th>
+                        <th>Transaction Status</th>
+                    </tr>
+                    <tr>
+                        <?php
+                        $search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
+                        $query = "SELECT payment_id, student_id, transaction_date, total_amount, amount_paid, amount_due, transaction_status 
                               FROM dinner_money 
                               WHERE payment_id LIKE '%$search%' 
                               OR student_id LIKE '%$search%' 
@@ -393,11 +395,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                               OR amount_paid LIKE '%$search%' 
                               OR amount_due LIKE '%$search%' 
                               OR transaction_status LIKE '%$search%'";
-                    $result = $conn->query($query);
+                        $result = $conn->query($query);
 
-                    if ($result && $result->num_rows > 0) {
-                        while ($row = $result->fetch_assoc()) {
-                            echo "<tr>
+                        if ($result && $result->num_rows > 0) {
+                            while ($row = $result->fetch_assoc()) {
+                                echo "<tr>
                                     <td>{$row['payment_id']}</td>
                                     <td>{$row['student_id']}</td>
                                     <td>{$row['transaction_date']}</td>
@@ -415,13 +417,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                         </form>
                                     </td>
                                   </tr>";
+                            }
+                        } else {
+                            echo "<tr><td colspan='7'>No records found</td></tr>";
                         }
-                    } else {
-                        echo "<tr><td colspan='7'>No records found</td></tr>";
-                    }
-                    ?>
-                </tr>
-        </table>
+                        ?>
+                    </tr>
+            </table>
+        </div>
     </div>
 
     <footer class="bg-dark text-white py-3 mt-4">

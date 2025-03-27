@@ -27,6 +27,7 @@ $user_data = signin_check($conn);
                     <a class="nav-link" href="/pages/registration.php">Registration</a>
                     <a class="nav-link" href="/pages/classinfo.php">Class Information</a>
                     <a class="nav-link" href="/pages/library.php">Library</a>
+                    <a class="nav-link " href="/pages/attendance.php">Attendance</a>
                 </div>
                 <div class="navbar-nav ms-auto">
                     <a class="nav-link" href="/pages/signout.php">Logout</a>
