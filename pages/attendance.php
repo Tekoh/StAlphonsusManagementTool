@@ -39,109 +39,229 @@ $user_data = signin_check($conn);
             </div>
         </div>
     </nav>
-    <div class="radio-inputs">
-        <label class="radio">
-            <input type="radio" name="tableOption" checked="" value="t">
-            <span class="name">Teachers</span>
-        </label>
-        <label class="radio">
-            <input type="radio" name="tableOption" value="st">
-            <span class="name">Students</span>
-        </label>
-        <label class="radio">
-            <input type="radio" name="tableOption" value="ca">
-            <span class="name">Class Assistant</span>
-        </label>
-    </div>
-    <div class="container mt-4">
-        <form method="GET" action="" class="d-flex justify-content-center my-3">
-            <input type="date" name="searchDate" class="form-control me-2" placeholder="Search by date"
-                value="<?php echo $_GET['searchDate'] ?? ''; ?>">
-            <button type="submit" class="btn btn-primary me-2">Search</button>
-            <button type="button" class="btn btn-secondary"
-                onclick="window.location.href='attendance.php'">Reset</button>
-        </form>
-        <form method="GET" action="" class=" d-flex justify-content-center my-3">
-            <input type="text" name="search" class="form-control me-2" placeholder="Search by name"
-                value="<?php echo $_GET['search'] ?? ''; ?>">
-            <button type="submit" class="btn btn-primary me-2">Search</button>
-            <button type="button" class="btn btn-secondary"
-                onclick="window.location.href='attendance.php'">Reset</button>
-        </form>
-        <?php
-        if (isset($_GET['searchDate']) && $_GET['searchDate'] <= date('Y-m-d')) {
-            $searchDate = $_GET['searchDate'];
-            $query = "SELECT * FROM attendance_teacher WHERE attendance_date = ?";
-            $stmt = $conn->prepare($query);
-            $stmt->bind_param("s", $searchDate);
-            $stmt->execute();
-            $result = $stmt->get_result();
+    <?php
+    // Initialize variables
+    $selectedType = $_GET['selectType'] ?? 'student';
+    $attendanceDate = $_GET['attendanceDate'] ?? date('Y-m-d');
+    $searchName = $_GET['searchName'] ?? '';
+    $classOption = $_GET['classOption'] ?? 'CLR-00001';
 
-            if ($result->num_rows == 0) {
-                // If no records found, create attendance records for all teachers
-                $teacherQuery = "SELECT teacher_id FROM teacher";
-                $teacherResult = $conn->query($teacherQuery);
-                while ($teacherRow = $teacherResult->fetch_assoc()) {
-                    $insertQuery = "INSERT INTO attendance_teacher (teacher_id, attendance_date, attendance_status, marks) VALUES (?, ?, 'Pending', '')";
-                    $insertStmt = $conn->prepare($insertQuery);
-                    $insertStmt->bind_param("is", $teacherRow['teacher_id'], $searchDate);
-                    $insertStmt->execute();
-                }
-                // Re-execute the query to get the newly inserted records
-                $stmt->execute();
-                $result = $stmt->get_result();
+    // Handle form submission to save attendance
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['attendance'])) {
+
+        
+        foreach ($_POST['attendance'] as $id => $data) {
+            $status = $data['status'] ?? 'Absent';
+            $remarks = $data['remarks'] ?? 'No remarks';
+
+            if ($selectedType === 'student') {
+                $query = "INSERT INTO attendance_student (student_id, attendance_date, attendance_status, remarks)
+                          VALUES (?, ?, ?, ?)
+                          ON DUPLICATE KEY UPDATE attendance_status = ?, remarks = ?";
+            } elseif ($selectedType === 'teacher') {
+                $query = "INSERT INTO attendance_teacher (teacher_id, attendance_date, attendance_status, remarks)
+                          VALUES (?, ?, ?, ?)
+                          ON DUPLICATE KEY UPDATE attendance_status = ?, remarks = ?";
+            } else {
+                $query = "INSERT INTO attendance_assistant (assistant_id, class_id, attendance_date, attendance_status, remarks)
+                          VALUES (?, ?, ?, ?, ?)
+                          ON DUPLICATE KEY UPDATE attendance_status = ?, remarks = ?";
             }
-        } else {
-            $query = "SELECT * FROM attendance_teacher";
-            $stmt = $conn->prepare($query);
-            $stmt->execute();
-            $result = $stmt->get_result();
+
+            if ($selectedType === 'student' || $selectedType === 'teacher') {
+                $stmt = $conn->prepare($query);
+                if ($stmt) {
+                    if (!$stmt->bind_param('ssssss', $id, $attendanceDate, $status, $remarks, $status, $remarks)) {
+                        error_log("Binding parameters failed: {$stmt->error}");
+                    } elseif (!$stmt->execute()) {
+                        echo $stmt->error;
+                        error_log("Execution failed: {$stmt->error}");
+                    }
+                    $stmt->close();
+                } else {
+                    error_log("Failed to prepare statement: {$conn->error}");
+                }
+            } elseif ($selectedType === 'assistant') {
+                $stmt = $conn->prepare($query);
+                if ($stmt) {
+                    if (!$stmt->bind_param('sssssss', $id, $classOption, $attendanceDate, $status, $remarks, $status, $remarks)) {
+                        error_log("Binding parameters failed: {$stmt->error}");
+                    } elseif (!$stmt->execute()) {
+                        echo $stmt->error;
+                        error_log("Execution failed: {$stmt->error}");
+                    }
+                    $stmt->close();
+                } else {
+                    error_log("Failed to prepare statement: {$conn->error}");
+                }
+            }
+            
         }
-        ?>
+    }
 
-        <table class="table table-bordered table-striped" id="t">
-            <thead>
-                <tr>
-                    <th>Attendance ID</th>
-                    <th>Teacher ID</th>
-                    <th>Attendance Date</th>
-                    <th>Attendance Status</th>
-                    <th>Marks</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php while ($row = $result->fetch_assoc()) { ?>
+    // Fetch attendance records based on selected type and filters
+    $records = [];
+    if ($selectedType === 'student') {
+        $query = "SELECT s.student_id AS id, CONCAT(p.first_name, ' ', p.last_name) AS name, 
+                         COALESCE(a.attendance_status, 'Absent') AS status, a.remarks
+                  FROM student s
+                  JOIN persons p ON s.person_id = p.person_id
+                  LEFT JOIN attendance_student a ON s.student_id = a.student_id AND a.attendance_date = ?
+                  WHERE s.class_id = ? AND CONCAT(p.first_name, ' ', p.last_name) LIKE ?";
+    } elseif ($selectedType === 'teacher') {
+        $query = "SELECT t.teacher_id AS id, CONCAT(p.first_name, ' ', p.last_name) AS name, 
+                         COALESCE(a.attendance_status, 'Absent') AS status, a.remarks
+                  FROM teacher t
+                  JOIN persons p ON t.person_id = p.person_id
+                  LEFT JOIN attendance_teacher a ON t.teacher_id = a.teacher_id AND a.attendance_date = ?
+                  WHERE CONCAT(p.first_name, ' ', p.last_name) LIKE ?";
+    } else {
+        $query = "SELECT DISTINCT a.assistant_id AS id, CONCAT(p.first_name, ' ', p.last_name) AS name, 
+                         COALESCE(aa.attendance_status, 'Absent') AS status, aa.remarks
+                  FROM assistant a
+                  JOIN persons p ON a.person_id = p.person_id
+                  JOIN class_assistant ca ON a.assistant_id = ca.assistant_id
+                  LEFT JOIN attendance_assistant aa ON a.assistant_id = aa.assistant_id AND aa.attendance_date = ?
+                  WHERE ca.class_id = ? AND CONCAT(p.first_name, ' ', p.last_name) LIKE ?";
+    }
+
+    $stmt = $conn->prepare($query);
+    if (!$stmt) {
+        die("Query preparation failed: " . $conn->error);
+    }
+
+    $searchNameLike = "%$searchName%";
+    if ($selectedType === 'student') {
+        $stmt->bind_param('sss', $attendanceDate, $classOption, $searchNameLike);
+    } elseif ($selectedType === 'teacher') {
+        $stmt->bind_param('ss', $attendanceDate, $searchNameLike);
+    } else {
+        $stmt->bind_param('sss', $attendanceDate, $classOption, $searchNameLike);
+    }
+
+    $stmt->execute();
+    $result = $stmt->get_result();
+    while ($row = $result->fetch_assoc()) {
+        $records[] = $row;
+    }
+    $stmt->close();
+    ?>
+
+    <!-- Class radio selection at the top -->
+    <form class="row g-3 align-items-center m-3" method="GET" action="">
+        <label class="form-label d-block">Select Class:</label>
+        <div class="radio-inputs d-flex flex-wrap mb-2">
+            <?php
+            $classes = [
+                'CLR-00001' => 'Reception Year',
+                'CLR-00002' => 'Year One',
+                'CLR-00003' => 'Year Two',
+                'CLR-00004' => 'Year Three',
+                'CLR-00005' => 'Year Four',
+                'CLR-00006' => 'Year Five',
+                'CLR-00007' => 'Year Six',
+            ];
+            foreach ($classes as $classId => $className) {
+                echo '<label class="radio me-3">
+                        <input type="radio" name="classOption" value="' . $classId . '" ' . ($classOption === $classId ? 'checked' : '') . '>
+                        <span class="name">' . $className . '</span>
+                      </label>';
+            }
+            ?>
+        </div>
+
+        <!-- Hidden inputs if needed to preserve other form fields -->
+        <input type="hidden" name="selectType" value="<?php echo htmlspecialchars($selectedType); ?>">
+        <input type="hidden" name="attendanceDate" value="<?php echo htmlspecialchars($attendanceDate); ?>">
+        <input type="hidden" name="searchName" value="<?php echo htmlspecialchars($searchName); ?>">
+        <button type="submit" class="btn btn-primary">Apply Class</button>
+    </form>
+
+    <div class="container mt-4">
+        <h4>Attendance Records</h4>
+        <form class="row g-3 align-items-center mb-3" method="GET" action="">
+            <div class="col-auto">
+                <label for="selectType" class="form-label">Select Type:</label>
+                <select id="selectType" name="selectType" class="form-select">
+                    <option value="student" <?php if ($selectedType === 'student') echo 'selected'; ?>>Student</option>
+                    <option value="teacher" <?php if ($selectedType === 'teacher') echo 'selected'; ?>>Teacher</option>
+                    <option value="assistant" <?php if ($selectedType === 'assistant') echo 'selected'; ?>>Assistant</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <label for="attendanceDate" class="form-label">Date:</label>
+                <input
+                    type="date"
+                    id="attendanceDate"
+                    name="attendanceDate"
+                    class="form-control"
+                    max="<?php echo date('Y-m-d'); ?>"
+                    value="<?php echo htmlspecialchars($attendanceDate); ?>"
+                >
+            </div>
+            <div class="col-auto">
+                <label for="searchName" class="form-label">Search Name:</label>
+                <input
+                    type="text"
+                    id="searchName"
+                    name="searchName"
+                    class="form-control"
+                    placeholder="Enter Name"
+                    value="<?php echo htmlspecialchars($searchName); ?>"
+                >
+            </div>
+            <!-- Keep class option hidden so it remains selected -->
+            <input type="hidden" name="classOption" value="<?php echo htmlspecialchars($classOption); ?>">
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+        </form>
+
+        <form method="POST" action="">
+            <table class="table table-striped">
+                <thead>
                     <tr>
-                        <td><?php echo $row['attendance_id']; ?></td>
-                        <td><?php echo $row['teacher_id']; ?></td>
-                        <td><?php echo $row['attendance_date']; ?></td>
-                        <td>
-                            <form method='POST' action=''>
-                                <input type='hidden' name='attendance_id' value='<?php echo $row['attendance_id']; ?>'>
-                                <select class='form-select' name='attendance_status' onchange='this.form.submit()'>
-                                    <option value='Present' <?php echo $row['attendance_status'] == 'Present' ? 'selected' : ''; ?>>Present</option>
-                                    <option value='Absent' <?php echo $row['attendance_status'] == 'Absent' ? 'selected' : ''; ?>>Absent</option>
-                                    <option value='Leave' <?php echo $row['attendance_status'] == 'Leave' ? 'selected' : ''; ?>>Leave</option>
-                                    <option value='Pending' <?php echo $row['attendance_status'] == 'Pending' ? 'selected' : ''; ?>>Pending</option>
-                                </select>
-                            </form>
-                        </td>
-                        <td>
-                            <form method='POST' action=''>
-                                <input type='hidden' name='attendance_id' value='<?php echo $row['attendance_id']; ?>'>
-                                <input type='text' class='form-control' name='marks' value='<?php echo $row['marks']; ?>' onchange='this.form.submit()'>
-                            </form>
-                        </td>
+                        <th>Name</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Remarks</th>
+                        <th>Date</th>
                     </tr>
-                <?php } ?>
-            </tbody>
-        </table>
-        <table class="table table-bordered table-striped" id="st">
-
-        </table>
-        <table class="table table-bordered table-striped" id="ca">
-
-        </table>
+                </thead>
+                <tbody>
+                    <?php if (empty($records)): ?>
+                        <tr>
+                            <td colspan="5" class="text-center">No records found.</td>
+                        </tr>
+                    <?php else: ?>
+                        <?php foreach ($records as $record): ?>
+                            <tr>
+                                <td><?php echo htmlspecialchars($record['name']); ?></td>
+                                <td><?php echo ucfirst($selectedType); ?></td>
+                                <td>
+                                    <select name="attendance[<?php echo $record['id']; ?>][status]" class="form-select">
+                                        <option value="Absent" <?php echo ($record['status'] === 'Absent') ? 'selected' : ''; ?>>Absent</option>
+                                        <option value="Present" <?php echo ($record['status'] === 'Present') ? 'selected' : ''; ?>>Present</option>
+                                        <option value="Leave" <?php echo ($record['status'] === 'Leave') ? 'selected' : ''; ?>>Leave</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input
+                                        type="text"
+                                        name="attendance[<?php echo $record['id']; ?>][remarks]"
+                                        class="form-control"
+                                        placeholder="Add remarks"
+                                        value="<?php echo htmlspecialchars($record['remarks'] ?? ''); ?>"
+                                    >
+                                </td>
+                                <td><?php echo htmlspecialchars($attendanceDate); ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+            <button type="submit" class="btn btn-success">Save Attendance</button>
+        </form>
     </div>
 
     <footer class="bg-dark text-white py-3 mt-4">
