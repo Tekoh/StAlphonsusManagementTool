@@ -40,7 +40,7 @@ $user_data = signin_check($conn);
         <p class="text-center">
             Stay updated on records, registration, class info, and more. Manage everything in one place.
         </p>
-        <div class="row mt-4">
+        <div class="row row-cols-1 row-cols-md-3 g-4 mt-4">
             <div class="col">
                 <div class="card h-100">
                     <img src="https://cdn.prod.website-files.com/62045da4270c887c4de9c45f/62080090f9b2b85ec9298118_iStock-1303715147.jpg" class="card-img-top" alt="Records" style="width: 100%; height: 200px; object-fit: cover;">
@@ -81,6 +81,16 @@ $user_data = signin_check($conn);
                     </div>
                 </div>
             </div>
+            <div class="col">
+                <div class="card h-100">
+                    <img src="https://worldscholarshipforum.com/wp-content/uploads/2023/10/Does-Authorised-Absence-Affect-Attendance-Percentage.jpg" class="card-img-top" alt="Attendance" style="width: 100%; height: 200px; object-fit: cover;">
+                    <div class="card-header">Attendance</div>
+                    <div class="card-body">
+                        <p class="card-text">Mark Student Attendance.</p>
+                        <a href="/pages/attendance.php" class="btn btn-primary">Go</a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     </div>
@@ -107,3 +117,4 @@ $user_data = signin_check($conn);
 </body>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </html>
+

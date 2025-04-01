@@ -148,8 +148,7 @@ $user_data = signin_check($conn);
     ?>
 
     <!-- Class radio selection at the top -->
-    <form class="row g-3 align-items-center m-3" method="GET" action="">
-        <label class="form-label d-block">Select Class:</label>
+    <form class="" method="GET" action="">
         <div class="radio-inputs d-flex flex-wrap mb-2">
             <?php
             $classes = [
@@ -168,13 +167,13 @@ $user_data = signin_check($conn);
                       </label>';
             }
             ?>
+            <button type="submit" class="btn btn-primary ">Apply Class</button>
         </div>
 
         <!-- Hidden inputs if needed to preserve other form fields -->
         <input type="hidden" name="selectType" value="<?php echo htmlspecialchars($selectedType); ?>">
         <input type="hidden" name="attendanceDate" value="<?php echo htmlspecialchars($attendanceDate); ?>">
         <input type="hidden" name="searchName" value="<?php echo htmlspecialchars($searchName); ?>">
-        <button type="submit" class="btn btn-primary">Apply Class</button>
     </form>
 
     <div class="container mt-4">

@@ -28,10 +28,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errors[] = "Last name must be at least 4 characters and contain only alphabets.";
     }
 
-    if (!in_array($gender, ['Male', 'Female', 'Other'])) {
-        $errors[] = "Gender must be Male, Female, or Other.";
-    }
-
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errors[] = "Invalid email format.";
     } else {
