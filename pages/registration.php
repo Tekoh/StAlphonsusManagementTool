@@ -218,8 +218,22 @@ $user_data = signin_check($conn);
                     <input type="number" class="form-control" id="capacity" name="capacity" required>
                 </div>
                 <div class="mb-3">
-                    <label for="teacherId" class="form-label">Teacher ID</label>
-                    <input type="text" class="form-control" id="teacherId" name="teacherId" required>
+                    <label for="teacherId" class="form-label">Select Teacher</label>
+                    <select class="form-control" id="teacherId" name="teacherId" required>
+                        <?php
+                        $query = "SELECT teacher.teacher_id, persons.first_name, persons.last_name 
+                                  FROM teacher 
+                                  INNER JOIN persons ON teacher.person_id = persons.person_id";
+                        $result = $conn->query($query);
+                        if ($result->num_rows > 0) {
+                            while ($row = $result->fetch_assoc()) {
+                                echo "<option value='" . $row['teacher_id'] . "'>Teacher ID: " . $row['teacher_id'] . " - Name: " . $row['first_name'] . " " . $row['last_name'] . "</option>";
+                            }
+                        } else {
+                            echo "<option value=''>No teachers available</option>";
+                        }
+                        ?>
+                    </select>
                 </div>
                 <button type="submit" class="btn btn-primary">Register</button>
             </form>
