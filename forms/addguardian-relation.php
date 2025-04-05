@@ -9,14 +9,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $relation = $_POST['relation'];
 
     // Validate relation
-    $valid_relations = ['Mother', 'Father', 'Family', 'Other'];
+    $valid_relations = ['mother', 'father', 'family', 'other'];
     if (!in_array($relation, $valid_relations)) {
         echo "<script>alert('Invalid relation'); window.history.back();</script>";
         exit();
     }
 
     // Validate guardianId exists in person table
-    $sql_check_guardian = "SELECT person_id FROM person WHERE person_id = '$guardianId'";
+    $sql_check_guardian = "SELECT guardian_id FROM guardian WHERE guardian_id = '$guardianId'";
     $result_guardian = $conn->query($sql_check_guardian);
     if ($result_guardian->num_rows == 0) {
         echo "<script>alert('Invalid guardian ID'); window.history.back();</script>";
@@ -28,6 +28,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $result_student = $conn->query($sql_check_student);
     if ($result_student->num_rows == 0) {
         echo "<script>alert('Invalid student ID'); window.history.back();</script>";
+        exit();
+    }
+
+    // Check if the relation already exists
+    $sql_check_relation = "SELECT * FROM guardian WHERE guardian_id = '$guardianId' AND student_id = '$studentId' AND relation = '$relation'";
+    $result_relation = $conn->query($sql_check_relation);
+    if ($result_relation->num_rows > 0) {
+        echo "<script>alert('This relation already exists'); window.history.back();</script>";
         exit();
     }
 

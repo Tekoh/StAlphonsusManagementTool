@@ -30,7 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errors[] = "Last name must be at least 4 characters and contain only alphabets.";
     }
 
-    if (!in_array($gender, ['Male', 'Female', 'Other'])) {
+    if (!in_array($gender, ['male', 'female', 'other'])) {
         $errors[] = "Gender must be Male, Female, or Other.";
     }
 
@@ -59,11 +59,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errors[] = "Fee must be between 50 and 50000.";
     }
 
-    if (!in_array($feeStatus, ['Paid', 'Pending', 'Overdue'])) {
+    if (!in_array($feeStatus, ['paid', 'pending', 'overdue'])) {
         $errors[] = "Fee status must be Paid, Pending, or Overdue.";
     }
 
-    if (!in_array($studentStatus, ['Active', 'Inactive', 'Suspended'])) {
+    if (!in_array($studentStatus, ['active', 'inactive', 'suspended'])) {
         $errors[] = "Student status must be Active, Inactive, or Suspended.";
     }
 

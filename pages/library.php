@@ -16,6 +16,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         header("Location: " . $_SERVER['PHP_SELF']);
         exit;
     }
+
+    // Handle delete request
+    if (isset($_POST['delete_transaction_id'])) {
+        $delete_transaction_id = $_POST['delete_transaction_id'];
+        $delete_query = "DELETE FROM library_transaction WHERE transaction_id = ?";
+        $stmt = $conn->prepare($delete_query);
+        $stmt->bind_param('s', $delete_transaction_id);
+        $stmt->execute();
+        $stmt->close();
+        // Redirect to refresh the page
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit;
+    }
 }
 ?>
 <html lang="en">
@@ -73,6 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <select class="form-control" id="book_id" name="book_id" required>
                     <option value="">Select a book</option>
                     <?php
+                    // Fetch book names from the library table in a loop to populate the dropdown
                     $query = "SELECT book_id, book_name FROM library";
                     $result = mysqli_query($conn, $query);
                     while ($row = mysqli_fetch_assoc($result)) {
@@ -134,12 +148,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </thead>
                 <tbody>
                     <?php
+                    // Fetching transaction records from the library_transaction table
+                    // and displaying them in a table format
                     $search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
                     $query = "SELECT transaction_id, student_id, borrow_date, return_date, transaction_status 
                       FROM library_transaction 
                       WHERE student_id LIKE '%$search%'";
                     $result = $conn->query($query);
-
+                    // also use the same functions to let the user update the transaction status in real time
                     if ($result && $result->num_rows > 0) {
                         while ($row = $result->fetch_assoc()) {
                             echo "<tr>
@@ -155,8 +171,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 <option id='warning' value='Pending' " . ($row['transaction_status'] == 'Pending' ? 'selected' : '') . ">Pending</option>
                                 <option id='fail' value='Overdue' " . ($row['transaction_status'] == 'Overdue' ? 'selected' : '') . ">Overdue</option>
                             </select>
-                        </form>
-                        </td>
+                        </form>";
+                            if ($row['transaction_status'] == 'Returned') {
+                                echo "<form method='POST' action='' style='display:inline;'>
+                                    <input type='hidden' name='delete_transaction_id' value='{$row['transaction_id']}'>
+                                    <button type='submit' class='btn btn-danger btn-sm'>Delete</button>
+                                </form>";
+                            }
+                            echo "</td>
                       </tr>";
                         }
                     } else {

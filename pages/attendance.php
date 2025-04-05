@@ -49,11 +49,11 @@ $user_data = signin_check($conn);
     // Handle form submission to save attendance
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['attendance'])) {
 
-        
+        // Loop through each attendance entry
         foreach ($_POST['attendance'] as $id => $data) {
             $status = $data['status'] ?? 'Absent';
             $remarks = $data['remarks'] ?? 'No remarks';
-
+            // Prepare the SQL query based on the selected type
             if ($selectedType === 'student') {
                 $query = "INSERT INTO attendance_student (student_id, attendance_date, attendance_status, remarks)
                           VALUES (?, ?, ?, ?)
@@ -67,10 +67,11 @@ $user_data = signin_check($conn);
                           VALUES (?, ?, ?, ?, ?)
                           ON DUPLICATE KEY UPDATE attendance_status = ?, remarks = ?";
             }
-
+            // Prepare the statement and bind parameters depending on the selected type of attendance
             if ($selectedType === 'student' || $selectedType === 'teacher') {
                 $stmt = $conn->prepare($query);
                 if ($stmt) {
+                    // binding parameters for student and teacher
                     if (!$stmt->bind_param('ssssss', $id, $attendanceDate, $status, $remarks, $status, $remarks)) {
                         error_log("Binding parameters failed: {$stmt->error}");
                     } elseif (!$stmt->execute()) {
@@ -81,6 +82,7 @@ $user_data = signin_check($conn);
                 } else {
                     error_log("Failed to prepare statement: {$conn->error}");
                 }
+                // For assistants, we need to include the class_id so bind it accordingly
             } elseif ($selectedType === 'assistant') {
                 $stmt = $conn->prepare($query);
                 if ($stmt) {
@@ -99,37 +101,49 @@ $user_data = signin_check($conn);
         }
     }
 
-    // Fetch attendance records based on selected type and filters
+    // Fetch attendance records based on selected type and filters and storing them in records array
     $records = [];
+    // query changes based on selected type so we need to prepare the query accordingly
+    // for students, student id will be used to get their first and last names which are concatenated and displayed as one
+    // as well as setting default values of absent and remarks
     if ($selectedType === 'student') {
         $query = "SELECT s.student_id AS id, CONCAT(p.first_name, ' ', p.last_name) AS name, 
                          COALESCE(a.attendance_status, 'Absent') AS status, a.remarks
                   FROM student s
+                -- getting the person id from the person table 
                   JOIN persons p ON s.person_id = p.person_id
                   LEFT JOIN attendance_student a ON s.student_id = a.student_id AND a.attendance_date = ?
                   WHERE s.class_id = ? AND CONCAT(p.first_name, ' ', p.last_name) LIKE ?";
     } elseif ($selectedType === 'teacher') {
+        // for teachers, teacher id will be used to get their first and last names which are concatenated and displayed as one
+        // as well as setting default values of absent and remarks
+        // the attendance table is joined with the teacher table to get the teacher id
         $query = "SELECT t.teacher_id AS id, CONCAT(p.first_name, ' ', p.last_name) AS name, 
                          COALESCE(a.attendance_status, 'Absent') AS status, a.remarks
                   FROM teacher t
+                -- and the person table to get the first and last names
                   JOIN persons p ON t.person_id = p.person_id
                   LEFT JOIN attendance_teacher a ON t.teacher_id = a.teacher_id AND a.attendance_date = ?
                   WHERE CONCAT(p.first_name, ' ', p.last_name) LIKE ?";
     } else {
+        // for assistants, assistant id will be used to get their first and last names which are concatenated and displayed as one
+        // as well as setting default values of absent and remarks
+        // the attendance table is joined with the assistant table to get the assistant id
         $query = "SELECT DISTINCT a.assistant_id AS id, CONCAT(p.first_name, ' ', p.last_name) AS name, 
                          COALESCE(aa.attendance_status, 'Absent') AS status, aa.remarks
                   FROM assistant a
+                -- getting the person id from the person table
                   JOIN persons p ON a.person_id = p.person_id
                   JOIN class_assistant ca ON a.assistant_id = ca.assistant_id
                   LEFT JOIN attendance_assistant aa ON a.assistant_id = aa.assistant_id AND aa.attendance_date = ?
                   WHERE ca.class_id = ? AND CONCAT(p.first_name, ' ', p.last_name) LIKE ?";
     }
-
+    // Prepare the statement from the query
     $stmt = $conn->prepare($query);
     if (!$stmt) {
         die("Query preparation failed: " . $conn->error);
     }
-
+    // search feature depending on type of attendance
     $searchNameLike = "%$searchName%";
     if ($selectedType === 'student') {
         $stmt->bind_param('sss', $attendanceDate, $classOption, $searchNameLike);
@@ -170,7 +184,7 @@ $user_data = signin_check($conn);
             <button type="submit" class="btn btn-primary ">Apply Class</button>
         </div>
 
-        <!-- Hidden inputs if needed to preserve other form fields -->
+        <!-- Hidden inputs if needed to preserve other form fields and use of anti XSS funtions -->
         <input type="hidden" name="selectType" value="<?php echo htmlspecialchars($selectedType); ?>">
         <input type="hidden" name="attendanceDate" value="<?php echo htmlspecialchars($attendanceDate); ?>">
         <input type="hidden" name="searchName" value="<?php echo htmlspecialchars($searchName); ?>">

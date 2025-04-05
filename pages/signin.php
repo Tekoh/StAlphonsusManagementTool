@@ -16,13 +16,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 header('Location: /index.php');
                 die();
             } else {
-                $error = "<p class='error'>Invalid Username or Password</p>";
+                $error_message = "Invalid Username or Password";
             }
         } else {
-            $error = "<p class='error'>Invalid Username or Password</p>";
+            $error_message = "Invalid Username or Password";
         }
     } else {
-        $error = "<p class='error'>Please fill all the fields</p>";
+        $error_message = "Please fill all the fields";
     }
 }
 
@@ -53,12 +53,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <span>Password</span>
         </label>
         <button class="submit">Submit</button>
+        <!-- Displaying the error messages -->
+        <?php if (!empty($error_message)): ?>
+            <div class="alert alert-danger" role="alert">
+                <?php echo $error_message; ?>
+            </div>
+        <?php endif; ?>
         <p class="signin">Dont Have An Account ? <a href="/pages/signup.php">Sign Up</a> </p>
     </form>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
     crossorigin="anonymous"></script>
-    <script src="/assets/js/login.js"></script>
+<script src="/assets/js/login.js"></script>
 
 </html>

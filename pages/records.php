@@ -34,6 +34,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // Redirect to the same page with no status or feedback
         header("Location: " . $_SERVER['PHP_SELF']);
         exit;
+    } elseif (isset($_POST['delete_payment_id'])) {
+        $delete_payment_id = $_POST['delete_payment_id'];
+        $delete_query = "DELETE FROM dinner_money WHERE payment_id = ?";
+        $stmt = $conn->prepare($delete_query);
+        $stmt->bind_param('s', $delete_payment_id);
+        $stmt->execute();
+        $stmt->close();
+        // Redirect to refresh the page
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit;
     }
 }
 
@@ -122,8 +132,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <?php
                     $search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
                     $query = "SELECT t.teacher_id, p.first_name, p.last_name, p.date_of_birth, p.gender, p.email, p.address, p.medical_history, p.contact, p.qualifications, t.enroll_date, t.salary, t.hours 
+                          -- Getting teacher info from persons table as well as teacher table by joinging them from person_id
                           FROM teacher t 
                           JOIN persons p ON t.person_id = p.person_id
+                          -- and filtering the data based on the search input and going through all the columns
                           WHERE p.first_name LIKE '%$search%' 
                           OR p.last_name LIKE '%$search%' 
                           OR p.date_of_birth LIKE '%$search%' 
@@ -186,7 +198,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
                     $query = "SELECT s.student_id, p.first_name, p.last_name, p.date_of_birth, p.gender, p.email, p.address, p.medical_history, p.contact, p.qualifications, s.subject, s.fee, s.fee_status, s.student_status, s.enroll_date 
                           FROM student s 
+                            -- Getting student info from persons table as well as student table by joinging them from person_id
                           JOIN persons p ON s.person_id = p.person_id
+                            -- and filtering the data based on the search input and going through all the columns
                           WHERE p.first_name LIKE '%$search%' 
                           OR p.last_name LIKE '%$search%' 
                           OR p.date_of_birth LIKE '%$search%' 
@@ -205,6 +219,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                     if ($result && $result->num_rows > 0) {
                         while ($row = $result->fetch_assoc()) {
+                            // update form feature where the user can update the fee and student status on the go in real time using update statements in the function
                             echo "<tr>
                                 <td>{$row['student_id']}</td>
                                 <td>{$row['first_name']}</td>
@@ -217,7 +232,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 <td>{$row['contact']}</td>
                                 <td>{$row['qualifications']}</td>
                                 <td>{$row['subject']}</td>
-                                <td>{$row['fee']}</td>
+                                <td>{$row['fee']}</td> 
                                 <td>
                                     <form method='POST' action=''>
                                         <input type='hidden' name='student_id' value='{$row['student_id']}'>
@@ -267,9 +282,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     </tr>
                     <?php
                     $search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
+                    // Getting assistant info from persons table as well as assistant table by joinging them from person_id
                     $query = "SELECT ta.assistant_id, p.first_name, p.last_name, p.date_of_birth, p.gender, p.email, p.address, p.medical_history, p.contact, p.qualifications, ta.enroll_date, ta.salary, ta.hours 
                           FROM assistant ta 
                           JOIN persons p ON ta.person_id = p.person_id
+                    -- and filtering the data based on the search input and going through all the columns
                           WHERE p.first_name LIKE '%$search%' 
                           OR p.last_name LIKE '%$search%' 
                           OR p.date_of_birth LIKE '%$search%' 
@@ -327,6 +344,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     </tr>
                     <?php
                     $search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
+                    // Getting guardian info from persons table as well as guardian table by joinging them from person_id
+                    // and filtering the data based on the search input and going through all the columns
+                    // and getting the wards of the guardian by joining the student table and persons table
+                    // and grouping the data by guardian id
                     $query = "SELECT g.guardian_id, p.first_name, p.last_name, p.date_of_birth, p.gender, p.email, p.address, p.medical_history, p.contact, p.qualifications, g.relation, 
                           GROUP_CONCAT(CONCAT(sp.first_name, ' ', sp.last_name) SEPARATOR ', ') AS wards
                           FROM guardian g 
@@ -386,6 +407,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <tr>
                         <?php
                         $search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
+                        // Getting dinner money info from dinner_money table and filtering the data based on the search input and going through all the columns
                         $query = "SELECT payment_id, student_id, transaction_date, total_amount, amount_paid, amount_due, transaction_status 
                               FROM dinner_money 
                               WHERE payment_id LIKE '%$search%' 
@@ -407,14 +429,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                     <td>{$row['amount_paid']}</td>
                                     <td>{$row['amount_due']}</td>
                                     <td>
-                                        <form method='POST' action=''>
-                                            <input type='hidden' name='payment_id' value='{$row['payment_id']}'>
-                                            <select class='form-select' name='transaction_status' onchange='this.form.submit()'>
-                                                <option id='success' value='Paid' " . ($row['transaction_status'] == 'Paid' ? 'selected' : '') . ">Paid</option>
-                                                <option id='warning' value='Pending' " . ($row['transaction_status'] == 'Pending' ? 'selected' : '') . ">Pending</option>
-                                                <option id='fail' value='Overdue' " . ($row['transaction_status'] == 'Overdue' ? 'selected' : '') . ">Overdue</option>
-                                            </select>
-                                        </form>
+                                        <div class='d-flex align-items-center'>
+                                            <form method='POST' action='' class='me-2'>
+                                                <input type='hidden' name='payment_id' value='{$row['payment_id']}'>
+                                                <select class='form-select form-select-sm' name='transaction_status' onchange='this.form.submit()'>
+                                                    <option value='Paid' " . ($row['transaction_status'] == 'Paid' ? 'selected' : '') . ">Paid</option>
+                                                    <option value='Pending' " . ($row['transaction_status'] == 'Pending' ? 'selected' : '') . ">Pending</option>
+                                                    <option value='Overdue' " . ($row['transaction_status'] == 'Overdue' ? 'selected' : '') . ">Overdue</option>
+                                                </select>
+                                            </form>";
+                                if ($row['transaction_status'] == 'Paid') {
+                                    echo "<form method='POST' action=''>
+                                            <input type='hidden' name='delete_payment_id' value='{$row['payment_id']}'>
+                                            <button type='submit' class='btn btn-danger btn-sm'>Delete</button>
+                                          </form>";
+                                }
+                                echo "</div>
                                     </td>
                                   </tr>";
                             }

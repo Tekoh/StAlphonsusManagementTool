@@ -34,3 +34,4 @@ document.addEventListener("DOMContentLoaded", function () {
         radios[0].dispatchEvent(new Event("change"));
     }
 });
+

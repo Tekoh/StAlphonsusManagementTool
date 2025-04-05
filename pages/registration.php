@@ -144,9 +144,9 @@ $user_data = signin_check($conn);
                 <div class="mb-3">
                     <label for="gender" class="form-label">Gender</label>
                     <select class="form-control" id="gender" name="gender" required>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                        <option value="Other">Other</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
                     </select>
                 </div>
                 <div class="mb-3">
@@ -280,11 +280,27 @@ $user_data = signin_check($conn);
                     <label for="hours" class="form-label">Hours</label>
                     <input type="number" class="form-control" id="hours" name="hours" required>
                 </div>
+                <div class="mb-3">
+                    <label for="classId" class="form-label">Class</label>
+                    <select class="form-control" id="classId" name="classId" required>
+                        <?php
+                        $query = "SELECT class_id, grade_level FROM class";
+                        $result = $conn->query($query);
+                        if ($result->num_rows > 0) {
+                            while ($row = $result->fetch_assoc()) {
+                                echo "<option value='" . $row['class_id'] . "'>Class ID: " . $row['class_id'] . " - Grade Level: " . $row['grade_level'] . "</option>";
+                            }
+                        } else {
+                            echo "<option value=''>No classes available</option>";
+                        }
+                        ?>
+                    </select>
+                </div>
                 <button type="submit" class="btn btn-primary">Register</button>
             </form>
 
         </div>
-        <div class="person">
+        <div class="guardian">
             <form action="/forms/addperson.php" id="guardian" method="POST" class="m-5">
                 <div class="mb-3">
                     <label for="firstName" class="form-label">First Name</label>
@@ -301,9 +317,9 @@ $user_data = signin_check($conn);
                 <div class="mb-3">
                     <label for="gender" class="form-label">Gender</label>
                     <select class="form-control" id="gender" name="gender" required>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                        <option value="Other">Other</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
                     </select>
                 </div>
                 <div class="mb-3">
@@ -316,8 +332,7 @@ $user_data = signin_check($conn);
                 </div>
                 <div class="mb-3">
                     <label for="medicalHistory" class="form-label">Medical History</label>
-                    <textarea class="form-control" id="medicalHistory" name="medicalHistory" rows="3"
-                        required></textarea>
+                    <textarea class="form-control" id="medicalHistory" name="medicalHistory" rows="3" required></textarea>
                 </div>
                 <div class="mb-3">
                     <label for="contact" class="form-label">Contact</label>
@@ -325,8 +340,32 @@ $user_data = signin_check($conn);
                 </div>
                 <div class="mb-3">
                     <label for="qualifications" class="form-label">Qualifications</label>
-                    <textarea class="form-control" id="qualifications" name="qualifications" rows="3"
-                        required></textarea>
+                    <textarea class="form-control" id="qualifications" name="qualifications" rows="3" required></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="studentId" class="form-label">Select Student</label>
+                    <select class="form-control" id="studentId" name="studentId" required>
+                        <?php
+                        $query = "SELECT student_id, first_name, last_name FROM student INNER JOIN persons ON student.person_id = persons.person_id";
+                        $result = $conn->query($query);
+                        if ($result->num_rows > 0) {
+                            while ($row = $result->fetch_assoc()) {
+                                echo "<option value='" . $row['student_id'] . "'>Student ID: " . $row['student_id'] . " - Name: " . $row['first_name'] . " " . $row['last_name'] . "</option>";
+                            }
+                        } else {
+                            echo "<option value=''>No students available</option>";
+                        }
+                        ?>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="relation" class="form-label">Relationship</label>
+                    <select class="form-control" id="relation" name="relation" required>
+                        <option value="Mother">Mother</option>
+                        <option value="Father">Father</option>
+                        <option value="Family">Family</option>
+                        <option value="Other">Other</option>
+                    </select>
                 </div>
                 <button type="submit" class="btn btn-primary">Register</button>
             </form>

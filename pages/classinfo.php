@@ -82,10 +82,12 @@ $user_data = signin_check($conn);
                     </tr>
                     <?php
                     $search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
+                    // Query to fetch teacher data by joining tables so i can get the teacher and person specific info
                     $query = "SELECT t.teacher_id, p.first_name, p.last_name, t.hours, c.grade_level 
                           FROM teacher t 
                           JOIN persons p ON t.person_id = p.person_id
                           JOIN class c ON t.teacher_id = c.teacher_id
+                        --   use like %% to search through the first name, last name, hours and class
                           WHERE p.first_name LIKE '%$search%' 
                           OR p.last_name LIKE '%$search%' 
                           OR t.hours LIKE '%$search%' 
@@ -121,11 +123,13 @@ $user_data = signin_check($conn);
                     </tr>
                     <?php
                     $search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
+                    // Query to fetch student data by joining tables so i can get the student and person specific info
                     $query = "SELECT s.student_id, p.first_name, p.last_name, s.subject, c.grade_level, t.teacher_id 
                           FROM student s 
                           JOIN persons p ON s.person_id = p.person_id
                           JOIN class c ON s.class_id = c.class_id
                           JOIN teacher t ON c.teacher_id = t.teacher_id
+                    -- // use like %% to search through the first name, last name, subject, class and teacher
                           WHERE p.first_name LIKE '%$search%' 
                           OR p.last_name LIKE '%$search%' 
                           OR s.subject LIKE '%$search%' 
@@ -161,11 +165,13 @@ $user_data = signin_check($conn);
                     </tr>
                     <?php
                     $search = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
+                    // Query to fetch class assistant data by joining tables so i can get the assistant and person specific info
                     $query = "SELECT a.assistant_id, p.first_name, p.last_name, c.grade_level 
                           FROM class_assistant ca 
                           JOIN assistant a ON ca.assistant_id = a.assistant_id
                           JOIN persons p ON a.person_id = p.person_id
                           JOIN class c ON ca.class_id = c.class_id
+                    -- // use like %% to search through the first name, last name and class
                           WHERE p.first_name LIKE '%$search%' 
                           OR p.last_name LIKE '%$search%' 
                           OR c.grade_level LIKE '%$search%'";
@@ -193,15 +199,19 @@ $user_data = signin_check($conn);
                     <label for="guardianId" class="form-label">Guardian ID</label>
                     <select class="form-control" id="guardianId" name="guardianId" required>
                         <?php
-                        $query = "SELECT person_id FROM persons";
+                        // Query to fetch guardian data by joining tables so i can get the guardian and person specific info
+                        // used distinct to avoid duplicates
+                        $query = "SELECT DISTINCT g.guardian_id, p.first_name, p.last_name 
+                                  FROM guardian g 
+                                  JOIN persons p ON g.guardian_id = p.person_id";
                         $result = $conn->query($query);
 
                         if ($result->num_rows > 0) {
                             while ($row = $result->fetch_assoc()) {
-                                echo '<option value="' . $row['person_id'] . '">' . $row['person_id'] . '</option>';
+                                echo '<option value="' . $row['guardian_id'] . '">' . $row['guardian_id'] . ' - ' . $row['first_name'] . ' ' . $row['last_name'] . '</option>';
                             }
                         } else {
-                            echo '<option value="">No persons available</option>';
+                            echo '<option value="">No guardians available</option>';
                         }
                         ?>
                     </select>
@@ -210,12 +220,14 @@ $user_data = signin_check($conn);
                     <label for="studentId" class="form-label">Student ID</label>
                     <select class="form-control" id="studentId" name="studentId" required>
                         <?php
-                        $query = "SELECT student_id FROM student";
+                        $query = "SELECT DISTINCT s.student_id, p.first_name, p.last_name 
+                                  FROM student s 
+                                  JOIN persons p ON s.person_id = p.person_id";
                         $result = $conn->query($query);
 
                         if ($result->num_rows > 0) {
                             while ($row = $result->fetch_assoc()) {
-                                echo '<option value="' . $row['student_id'] . '">' . $row['student_id'] . '</option>';
+                                echo '<option value="' . $row['student_id'] . '">' . $row['student_id'] . ' - ' . $row['first_name'] . ' ' . $row['last_name'] . '</option>';
                             }
                         } else {
                             echo '<option value="">No students available</option>';
@@ -241,12 +253,16 @@ $user_data = signin_check($conn);
                 <label for="assistantId" class="form-label">Assistant ID</label>
                 <select class="form-control" id="assistantId" name="assistantId" required>
                 <?php
-                $query = "SELECT assistant_id FROM assistant";
+                $query = "SELECT a.assistant_id, p.first_name, p.last_name 
+                          FROM assistant a 
+                          JOIN persons p ON a.person_id = p.person_id";
                 $result = $conn->query($query);
-
+                // Query to fetch assistant data by joining tables so i can get the assistant and person specific info
+                // this way i can add the assistant to the class
                 if ($result->num_rows > 0) {
                     while ($row = $result->fetch_assoc()) {
-                    echo '<option value="' . $row['assistant_id'] . '">' . $row['assistant_id'] . '</option>';
+                    // making sure to show the assisntant id as well as their name for better clarity
+                        echo '<option value="' . $row['assistant_id'] . '">' . $row['assistant_id'] . ' - ' . $row['first_name'] . ' ' . $row['last_name'] . '</option>';
                     }
                 } else {
                     echo '<option value="">No assistants available</option>';
@@ -258,12 +274,13 @@ $user_data = signin_check($conn);
                 <label for="classId" class="form-label">Class ID</label>
                 <select class="form-control" id="classId" name="classId" required>
                 <?php
-                $query = "SELECT class_id FROM class";
+                $query = "SELECT class_id, grade_level FROM class";
                 $result = $conn->query($query);
 
                 if ($result->num_rows > 0) {
                     while ($row = $result->fetch_assoc()) {
-                    echo '<option value="' . $row['class_id'] . '">' . $row['class_id'] . '</option>';
+                    // making sure to show the class id as well as the grade leve / name of the class for better clarity
+                    echo '<option value="' . $row['class_id'] . '">' . $row['class_id'] . ' - ' . $row['grade_level'] . '</option>';
                     }
                 } else {
                     echo '<option value="">No classes available</option>';
