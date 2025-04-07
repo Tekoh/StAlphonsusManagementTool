@@ -236,7 +236,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 <td>
                                     <form method='POST' action=''>
                                         <input type='hidden' name='student_id' value='{$row['student_id']}'>
-                                        <select class='form-select' name='fee_status' onchange='this.form.submit()'>
+                                        <select class='' name='fee_status' onchange='this.form.submit()'>
                                             <option value='Paid' " . ($row['fee_status'] == 'Paid' ? 'selected' : '') . ">Paid</option>
                                             <option value='Pending' " . ($row['fee_status'] == 'Pending' ? 'selected' : '') . ">Pending</option>
                                             <option value='Overdue' " . ($row['fee_status'] == 'Overdue' ? 'selected' : '') . ">Overdue</option>
@@ -246,7 +246,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 <td>
                                     <form method='POST' action=''>
                                         <input type='hidden' name='student_id' value='{$row['student_id']}'>
-                                        <select class='form-select' name='student_status' onchange='this.form.submit()'>
+                                        <select class='' name='student_status' onchange='this.form.submit()'>
                                             <option value='Active' " . ($row['student_status'] == 'Active' ? 'selected' : '') . ">Active</option>
                                             <option value='Inactive' " . ($row['student_status'] == 'Inactive' ? 'selected' : '') . ">Inactive</option>
                                             <option value='Suspended' " . ($row['student_status'] == 'Suspended' ? 'selected' : '') . ">Suspended</option>
@@ -432,7 +432,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                         <div class='d-flex align-items-center'>
                                             <form method='POST' action='' class='me-2'>
                                                 <input type='hidden' name='payment_id' value='{$row['payment_id']}'>
-                                                <select class='form-select form-select-sm' name='transaction_status' onchange='this.form.submit()'>
+                                                <select class='' name='transaction_status' onchange='this.form.submit()'>
                                                     <option value='Paid' " . ($row['transaction_status'] == 'Paid' ? 'selected' : '') . ">Paid</option>
                                                     <option value='Pending' " . ($row['transaction_status'] == 'Pending' ? 'selected' : '') . ">Pending</option>
                                                     <option value='Overdue' " . ($row['transaction_status'] == 'Overdue' ? 'selected' : '') . ">Overdue</option>
