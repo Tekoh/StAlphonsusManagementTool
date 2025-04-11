@@ -34,12 +34,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // Redirect to the same page with no status or feedback
         header("Location: " . $_SERVER['PHP_SELF']);
         exit;
-    } elseif (isset($_POST['delete_payment_id'])) {
+    } // Check if the 'delete_payment_id' key exists in the POST request
+    elseif (isset($_POST['delete_payment_id'])) {
+
+        // Retrieve the value of 'delete_payment_id' from the POST request
         $delete_payment_id = $_POST['delete_payment_id'];
+
+        // Define the SQL query to delete a record from the 'dinner_money' table
+        // The record to be deleted is identified by the 'payment_id' column
         $delete_query = "DELETE FROM dinner_money WHERE payment_id = ?";
+
+        // Prepare the SQL query to prevent SQL injection
         $stmt = $conn->prepare($delete_query);
+
+        // Bind the 'delete_payment_id' value to the prepared statement
+        // The 's' indicates that the parameter is a string
         $stmt->bind_param('s', $delete_payment_id);
+
+        // Execute the prepared statement to delete the record
         $stmt->execute();
+
+        // Close the prepared statement to free up resources
         $stmt->close();
         // Redirect to refresh the page
         header("Location: " . $_SERVER['PHP_SELF']);
