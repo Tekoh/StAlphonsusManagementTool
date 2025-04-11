@@ -199,18 +199,22 @@ $user_data = signin_check($conn);
                     <label for="guardianId" class="form-label">Guardian ID</label>
                     <select class="form-control" id="guardianId" name="guardianId" required>
                         <?php
-                        // Query to fetch guardian data by joining tables so i can get the guardian and person specific info
-                        // used distinct to avoid duplicates
+                        // Fetch a list of guardians from the database by joining the guardian and persons tables.
+                        // Using DISTINCT to ensure there are no duplicate entries in the dropdown.
                         $query = "SELECT DISTINCT g.guardian_id, p.first_name, p.last_name 
                                   FROM guardian g 
                                   JOIN persons p ON g.guardian_id = p.person_id";
                         $result = $conn->query($query);
 
+                        // Check if the query returned any results.
                         if ($result->num_rows > 0) {
+                            // Loop through each guardian and create an option in the dropdown.
                             while ($row = $result->fetch_assoc()) {
+                                // Display the guardian ID along with their first and last name for clarity.
                                 echo '<option value="' . $row['guardian_id'] . '">' . $row['guardian_id'] . ' - ' . $row['first_name'] . ' ' . $row['last_name'] . '</option>';
                             }
                         } else {
+                            // If no guardians are available, show a placeholder message.
                             echo '<option value="">No guardians available</option>';
                         }
                         ?>
@@ -220,16 +224,22 @@ $user_data = signin_check($conn);
                     <label for="studentId" class="form-label">Student ID</label>
                     <select class="form-control" id="studentId" name="studentId" required>
                         <?php
+                        // Fetch a list of students from the database by joining the student and persons tables.
+                        // Using DISTINCT to ensure there are no duplicate entries in the dropdown.
                         $query = "SELECT DISTINCT s.student_id, p.first_name, p.last_name 
                                   FROM student s 
                                   JOIN persons p ON s.person_id = p.person_id";
                         $result = $conn->query($query);
 
+                        // Check if the query returned any results.
                         if ($result->num_rows > 0) {
+                            // Loop through each student and create an option in the dropdown.
                             while ($row = $result->fetch_assoc()) {
+                                // Display the student ID along with their first and last name for clarity.
                                 echo '<option value="' . $row['student_id'] . '">' . $row['student_id'] . ' - ' . $row['first_name'] . ' ' . $row['last_name'] . '</option>';
                             }
                         } else {
+                            // If no students are available, show a placeholder message.
                             echo '<option value="">No students available</option>';
                         }
                         ?>

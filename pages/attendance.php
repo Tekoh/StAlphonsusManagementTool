@@ -48,56 +48,70 @@ $user_data = signin_check($conn);
 
     // Handle form submission to save attendance
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['attendance'])) {
+        // Check if the form was submitted via POST and if attendance data exists
 
-        // Loop through each attendance entry
+        // Loop through each attendance entry submitted in the form
         foreach ($_POST['attendance'] as $id => $data) {
+            // Extract the status and remarks for the current entry, with default values
             $status = $data['status'] ?? 'Absent';
             $remarks = $data['remarks'] ?? 'No remarks';
-            // Prepare the SQL query based on the selected type
+
+            // Prepare the SQL query based on the selected type (student, teacher, or assistant)
             if ($selectedType === 'student') {
+                // Query for inserting/updating student attendance
                 $query = "INSERT INTO attendance_student (student_id, attendance_date, attendance_status, remarks)
                           VALUES (?, ?, ?, ?)
                           ON DUPLICATE KEY UPDATE attendance_status = ?, remarks = ?";
             } elseif ($selectedType === 'teacher') {
+                // Query for inserting/updating teacher attendance
                 $query = "INSERT INTO attendance_teacher (teacher_id, attendance_date, attendance_status, remarks)
                           VALUES (?, ?, ?, ?)
                           ON DUPLICATE KEY UPDATE attendance_status = ?, remarks = ?";
             } else {
+                // Query for inserting/updating assistant attendance
                 $query = "INSERT INTO attendance_assistant (assistant_id, class_id, attendance_date, attendance_status, remarks)
                           VALUES (?, ?, ?, ?, ?)
                           ON DUPLICATE KEY UPDATE attendance_status = ?, remarks = ?";
             }
-            // Prepare the statement and bind parameters depending on the selected type of attendance
+
+            // Prepare the SQL statement
             if ($selectedType === 'student' || $selectedType === 'teacher') {
+                // For students and teachers, prepare the statement
                 $stmt = $conn->prepare($query);
                 if ($stmt) {
-                    // binding parameters for student and teacher
+                    // Bind parameters for student/teacher attendance
                     if (!$stmt->bind_param('ssssss', $id, $attendanceDate, $status, $remarks, $status, $remarks)) {
+                        // Log an error if parameter binding fails
                         error_log("Binding parameters failed: {$stmt->error}");
                     } elseif (!$stmt->execute()) {
+                        // Log an error if query execution fails
                         echo $stmt->error;
                         error_log("Execution failed: {$stmt->error}");
                     }
-                    $stmt->close();
+                    $stmt->close(); // Close the statement
                 } else {
+                    // Log an error if statement preparation fails
                     error_log("Failed to prepare statement: {$conn->error}");
                 }
-                // For assistants, we need to include the class_id so bind it accordingly
             } elseif ($selectedType === 'assistant') {
+                // For assistants, include the class_id in the query
                 $stmt = $conn->prepare($query);
                 if ($stmt) {
+                    // Bind parameters for assistant attendance
                     if (!$stmt->bind_param('sssssss', $id, $classOption, $attendanceDate, $status, $remarks, $status, $remarks)) {
+                        // Log an error if parameter binding fails
                         error_log("Binding parameters failed: {$stmt->error}");
                     } elseif (!$stmt->execute()) {
+                        // Log an error if query execution fails
                         echo $stmt->error;
                         error_log("Execution failed: {$stmt->error}");
                     }
-                    $stmt->close();
+                    $stmt->close(); // Close the statement
                 } else {
+                    // Log an error if statement preparation fails
                     error_log("Failed to prepare statement: {$conn->error}");
                 }
             }
-            
         }
     }
 

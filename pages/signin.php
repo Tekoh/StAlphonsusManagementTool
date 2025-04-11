@@ -1,27 +1,42 @@
 <?php
-session_start();
-include __DIR__ . "/../connection.php";
-include __DIR__ . "/../functions.php";
+session_start(); // Start the session to manage user login state
+include __DIR__ . "/../connection.php"; // Include the database connection file
+include __DIR__ . "/../functions.php"; // Include additional helper functions
+
+// Check if the form was submitted via POST method
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
+    $username = $_POST['username']; // Get the username from the form
+    $password = $_POST['password']; // Get the password from the form
+
+    // Ensure both username and password fields are filled
     if (!empty($username) && !empty($password)) {
+        // Query the database to find the user with the provided username
         $query = "SELECT * FROM users WHERE username = '$username'";
         $result = mysqli_query($conn, $query);
+
+        // Check if a user with the given username exists
         if (mysqli_num_rows($result) > 0) {
-            $user = mysqli_fetch_assoc($result);
+            $user = mysqli_fetch_assoc($result); // Fetch the user's data
+
+            // Verify the provided password matches the hashed password in the database
             if (password_verify($password, $user['password'])) {
+                // Store user information in the session to keep them logged in
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['username'] = $user['username'];
+
+                // Redirect the user to the homepage
                 header('Location: /index.php');
-                die();
+                die(); // Stop further script execution
             } else {
+                // Set an error message if the password is incorrect
                 $error_message = "Invalid Username or Password";
             }
         } else {
+            // Set an error message if the username does not exist
             $error_message = "Invalid Username or Password";
         }
     } else {
+        // Set an error message if any of the fields are empty
         $error_message = "Please fill all the fields";
     }
 }
