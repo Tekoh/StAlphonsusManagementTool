@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 07, 2025 at 04:54 PM
+-- Generation Time: Apr 11, 2025 at 06:45 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -175,10 +175,7 @@ CREATE TABLE `dinner_money` (
 --
 
 INSERT INTO `dinner_money` (`payment_id`, `student_id`, `transaction_date`, `total_amount`, `amount_paid`, `amount_due`, `transaction_status`) VALUES
-(1, 'STD-00001', '2025-01-10', 50, 50, 0, 'Paid'),
 (2, 'STD-00002', '2025-02-15', 50, 25, 25, 'Pending'),
-(3, 'STD-00003', '2025-03-01', 50, 0, 50, 'Overdue'),
-(4, 'STD-00004', '2025-01-20', 50, 50, 0, 'Paid'),
 (5, 'STD-00005', '2025-02-10', 50, 30, 20, 'Pending'),
 (6, 'STD-00006', '2025-03-15', 50, 0, 50, 'Overdue'),
 (7, 'STD-00007', '2025-01-25', 50, 50, 0, 'Paid'),
@@ -364,7 +361,6 @@ CREATE TABLE `library_transaction` (
 --
 
 INSERT INTO `library_transaction` (`transaction_id`, `student_id`, `book_id`, `borrow_date`, `return_date`, `transaction_status`) VALUES
-(1, 'STD-00012', 'BK-00033', '2024-01-02', '2024-01-10', 'Returned'),
 (2, 'STD-00005', 'BK-00021', '2024-01-03', NULL, 'Pending'),
 (3, 'STD-00019', 'BK-00011', '2024-01-04', '2024-01-12', 'Overdue'),
 (4, 'STD-00001', 'BK-00050', '2024-01-05', '2024-01-15', 'Returned'),
@@ -519,7 +515,10 @@ INSERT INTO `persons` (`person_id`, `first_name`, `last_name`, `date_of_birth`, 
 ('P-00088', 'Alice', 'Parker', '1982-02-07', 'Female', 'alice.parker@guardian.stalph.ac.uk', '18 Birch Rd, Newcastle', 'None', '07123456870', 'None'),
 ('P-00089', 'Charles', 'Thompson', '1980-09-30', 'Male', 'charles.thompson@guardian.stalph.ac.uk', '6 Spruce St, Cardiff', 'None', '07123456871', 'None'),
 ('P-00090', 'Diana', 'Roberts', '1983-05-23', 'Female', 'diana.roberts@guardian.stalph.ac.uk', '24 Cedar Ave, Glasgow', 'None', '07123456872', 'None'),
-('P-00091', 'Henry', 'Wilson', '1978-11-16', 'Male', 'henry.wilson@guardian.stalph.ac.uk', '10 Oak Ln, Edinburgh', 'None', '07123456873', 'None');
+('P-00091', 'Henry', 'Wilson', '1978-11-16', 'Male', 'henry.wilson@guardian.stalph.ac.uk', '10 Oak Ln, Edinburgh', 'None', '07123456873', 'None'),
+('P-00092', 'Mahd', 'Raihan', '2004-08-14', 'Male', 'mahdraihan@outlook.com', 'University Academy 92 Old Trafford Manchester', 'Nill', '+441234123456', 'Nill'),
+('P-00093', 'Mahd', 'Raihan', '2004-08-14', 'Male', 'mahdraihan1@outlook.com', 'University Academy 92 Old Trafford Manchester', 'Nill', '+441234123456', 'Nill'),
+('P-00094', 'Mahd', 'Raihan', '1999-12-12', 'Male', 'mahdraihan21@outlook.com', 'University Academy 92 Old Trafford Manchester', 'Nill', '+441234123456', 'Nill');
 
 -- --------------------------------------------------------
 
@@ -543,7 +542,7 @@ CREATE TABLE `student` (
 --
 
 INSERT INTO `student` (`student_id`, `person_id`, `class_id`, `subject`, `fee`, `fee_status`, `student_status`, `enroll_date`) VALUES
-('STD-00001', 'P-00008', 'CLR-00001', 'Core Curriculum', 500, 'Paid', 'Active', '2024-09-01'),
+('STD-00001', 'P-00008', 'CLR-00001', 'Core Curriculum', 500, 'Pending', 'Active', '2024-09-01'),
 ('STD-00002', 'P-00009', 'CLR-00002', 'Core Curriculum', 500, 'Pending', 'Active', '2024-09-02'),
 ('STD-00003', 'P-00010', 'CLR-00003', 'Core Curriculum', 500, 'Overdue', 'Suspended', '2024-09-03'),
 ('STD-00004', 'P-00011', 'CLR-00004', 'Core Curriculum', 500, 'Paid', 'Active', '2024-09-04'),
@@ -582,7 +581,8 @@ INSERT INTO `student` (`student_id`, `person_id`, `class_id`, `subject`, `fee`, 
 ('STD-00037', 'P-00047', 'CLR-00002', 'Core Curriculum', 500, 'Paid', 'Inactive', '2024-10-07'),
 ('STD-00038', 'P-00048', 'CLR-00003', 'Core Curriculum', 500, 'Overdue', 'Suspended', '2024-10-08'),
 ('STD-00039', 'P-00049', 'CLR-00004', 'Core Curriculum', 500, 'Paid', 'Active', '2024-10-09'),
-('STD-00040', 'P-00050', 'CLR-00005', 'Core Curriculum', 500, 'Pending', 'Active', '2024-10-10');
+('STD-00040', 'P-00050', 'CLR-00005', 'Core Curriculum', 500, 'Pending', 'Active', '2024-10-10'),
+('STD-00041', 'P-00094', 'CLR-00002', 'Core', 2000, 'Paid', 'Active', '2025-04-11');
 
 -- --------------------------------------------------------
 

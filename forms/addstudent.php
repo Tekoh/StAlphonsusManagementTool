@@ -18,6 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $feeStatus = $_POST['feeStatus'];
     $studentStatus = $_POST['studentStatus'];
     $enrollDate = $_POST['enrollDate'];
+    $classId = $_POST['classId'];
 
     // Validation
     $errors = [];
@@ -47,8 +48,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $emailCheck->close();
     }
 
-    if (!preg_match("/^(\+44\s?7\d{3}|\(?07\d{3}\)?)\s?\d{3}\s?\d{3}$/", $contact)) {
-        $errors[] = "Contact must be a valid UK number.";
+    if (!is_numeric($contact)) {
+        $errors[] = "Contact must contain only numeric characters.";
     }
 
     if (!preg_match("/^[a-zA-Z]+$/", $subject)) {
@@ -71,6 +72,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errors[] = "Enroll date cannot be in the future.";
     }
 
+    if (empty($classId)) {
+        $errors[] = "Class ID is required.";
+    }
+
     if (empty($errors)) {
         // Get next person_id
         $person_id = getNextId($conn, 'P-', 'persons', 'person_id');
@@ -79,9 +84,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if ($conn->query($sql_person) === TRUE) {
             // Get next student_id
-            $student_id = getNextId($conn, 'ST-', 'students', 'student_id');
-            $sql_student = "INSERT INTO students (student_id, person_id, subject, fee, fee_status, student_status, enroll_date) 
-                            VALUES ('$student_id', '$person_id', '$subject', '$fee', '$feeStatus', '$studentStatus', '$enrollDate')";
+            $student_id = getNextId($conn, 'STD-', 'student', 'student_id');
+            $sql_student = "INSERT INTO student (student_id, person_id, class_id, subject, fee, fee_status, student_status, enroll_date) 
+                            VALUES ('$student_id', '$person_id', '$classId', '$subject', '$fee', '$feeStatus', '$studentStatus', '$enrollDate')";
 
             if ($conn->query($sql_student) === TRUE) {
                 echo "<script>alert('New student registered successfully'); window.location.href='/pages/records.php';</script>";

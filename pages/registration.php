@@ -199,6 +199,22 @@ $user_data = signin_check($conn);
                     <label for="enrollDate" class="form-label">Enroll Date</label>
                     <input type="date" class="form-control" id="enrollDate" name="enrollDate" required>
                 </div>
+                <div class="mb-3">
+                    <label for="classId" class="form-label">Select Class</label>
+                    <select class="form-control" id="classId" name="classId" required>
+                        <?php
+                        $query = "SELECT class_id, grade_level FROM class";
+                        $result = $conn->query($query);
+                        if ($result->num_rows > 0) {
+                            while ($row = $result->fetch_assoc()) {
+                                echo "<option value='" . $row['class_id'] . "'>Class ID: " . $row['class_id'] . " - Grade Level: " . $row['grade_level'] . "</option>";
+                            }
+                        } else {
+                            echo "<option value=''>No classes available</option>";
+                        }
+                        ?>
+                    </select>
+                </div>
                 <button type="submit" class="btn btn-primary">Register</button>
             </form>
 
